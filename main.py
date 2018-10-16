@@ -1,5 +1,5 @@
 #!/usr/bin/env python2
-
+# encoding=utf8
 import sys
 import psutil
 import os
@@ -26,7 +26,7 @@ def check_disk(args):
                 color=logger.OKGREEN)
 
     if remote_SSH_host.ssh_connect():
-        cmd = "lsblk -l -b| awk 'NR>1 && /.*part.*/ {print $4, $6, $7}'"
+        cmd = "lsblk -l -b | awk 'NR>1 && /.*part.*/ {print $4, $6, $7}'"
         cmd_result = remote_SSH_host.exec_remote_command(cmd)
         pprint.PrettyPrinter(indent=2).pprint(cmd_result)
         remote_SSH_host.ssh_close()
@@ -34,24 +34,27 @@ def check_disk(args):
     partitions_list = [ line.encode('utf-8') for line in cmd_result['stdout'] ]
     patitions_available = get_patitions_with_free_space(partitions_list, 1073741824) # 1073741824 =1GB
     pprint.PrettyPrinter(indent=2, width=400).pprint(patitions_available)
+
+    remote_SSH_host = Host(args)
     if patitions_available:
         if remote_SSH_host.ssh_connect():
             mount_point = patitions_available[0].split()[-1]
             mount_point = mount_point[:-1] if mount_point[-1] == '/' else mount_point
             for i in range(FILES_TO_CLEATE):
-                cmd = "mkdir -p {mount_point}/somedir ".format(mount_point=mount_point, i=i)
+                cmd = "sudo mkdir -p {mount_point}/somedir ".format(mount_point=mount_point, i=i)
+                cmd += "&& sudo chown -R {user} {mount_point}/somedir ".format(user=args.user, mount_point=mount_point, i=i)
                 cmd += "&& touch {mount_point}/somedir/{i} ".format(mount_point=mount_point, i=i)
                 cmd += "&& dd if=/dev/zero bs=5242880 count=1 >> {mount_point}/somedir/{i} ".format(mount_point=mount_point, i=i)
                 cmd_result = remote_SSH_host.exec_remote_command(cmd)
-
-    pprint.PrettyPrinter(indent=2, width=400).pprint(patitions_available[0].split()[-1])
-
+    remote_SSH_host.ssh_close()
 
 def run_remote(args):
     pass
 
 
 if __name__ == '__main__':
+    reload(sys)
+    sys.setdefaultencoding('utf8')
     logger.log('\n\n*****************')
     logger.log("{args}".format(args=" ".join(sys.argv)))
 
