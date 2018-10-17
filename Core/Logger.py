@@ -1,6 +1,5 @@
 import os
 
-
 class Logger(object):
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -45,8 +44,6 @@ class Logger(object):
             import datetime
             if not os.path.exists(self.output_dir):
                 os.makedirs(self.output_dir)
-            if not os.path.isfile(self.logfile):
-                open(self.logfile, 'a').close()
             with open(os.path.join(self.output_dir, self.logfile), 'a') as f:
                 f.writelines("{time} [{type}] {message}{newline}".format(time=datetime.datetime.now(),
                                                                          type=mtype, message=message, newline=newline))
