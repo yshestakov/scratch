@@ -2,6 +2,6 @@
 
 int main(int argc, char** argv)
 {
-    printf("Hello, hooks-6: %s\n", argv[0]);
+    printf("Hello, hooks2-2: %s\n", argv[0]);
     return 0;
 }
