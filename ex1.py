@@ -28,7 +28,7 @@ for partition in partitions:
             test_file = "test_file"+str(i)
             out_fd = open(test_file,'w')
             out_fd.write('start \n')
-            of='of=/dev/shm/'+test_file
+            of='of=%s/%s' % (partition.mountpoint, test_file)
             cmd_list = ['dd','if=/dev/urandom', of, bs,count]
             a = subprocess.Popen(cmd_list,stderr=out_fd)
             # a.communicate()
