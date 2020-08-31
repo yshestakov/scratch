@@ -1,8 +1,8 @@
 Source: amhello
 Section: unknown
 Priority: optional
-Maintainer: yu <yu@macpro.o.jet-wear.com>
-Build-Depends: debhelper (>= 10)
+Maintainer: Yurii <yshestakov@gmail.com>
+Build-Depends: debhelper (>= 9)
 Standards-Version: 4.1.2
 Homepage: <insert the upstream URL, if relevant>
 #Vcs-Git: https://anonscm.debian.org/git/collab-maint/amhello.git
@@ -11,5 +11,4 @@ Homepage: <insert the upstream URL, if relevant>
 Package: amhello
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
+Description: autotools hello-world
