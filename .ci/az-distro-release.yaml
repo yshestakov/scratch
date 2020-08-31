@@ -29,6 +29,7 @@ jobs:
           autoreconf -iv
           mkdir pkg-build
           cd pkg-build
+          cp -pvr ../debian/ ./
           ../configure --prefix=/usr
         displayName: Configure
 
