@@ -32,7 +32,7 @@ stages:
         - bash: |
             set -eE
             gcc --version
-            ./configure --perfix=/usr
+            ./configure --prefix=/usr
             make dist
           displayName: Build dist tarball
 
