@@ -12,6 +12,8 @@ resources:
     - container: centos7
       image: ucfconsort.azurecr.io/ucx/centos7:2
       endpoint: ucfconsort_registry
+    - container: ubuntu16_cuda10_2
+      image: rdmz-harbor.rdmz.labs.mlnx/ucx/ubuntu16.04-mofed5.0-cuda10.2:1
     - container: ubuntu18_cuda11
       image: rdmz-harbor.rdmz.labs.mlnx/ucx/ubuntu18.04-mofed5.0-cuda11.0:1
 
