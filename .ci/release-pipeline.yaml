@@ -1,0 +1,58 @@
+# See https://aka.ms/yaml
+# This pipeline to be run on tags creation
+
+pr: none
+trigger:
+  tags:
+    include:
+      - v*
+
+resources:
+  containers:
+    - container: centos7
+      image: ucfconsort.azurecr.io/ucx/centos7:2
+      endpoint: ucfconsort_registry
+    - container: ubuntu18_cuda11
+      image: rdmz-harbor.rdmz.labs.mlnx/ucx/ubuntu18.04-mofed5.0-cuda11.0:1
+
+stages:
+  # Create an empty draft to avoid race condition in distro releases
+  - stage: GitHubDraft
+    jobs:
+      - job: DraftRelease
+        container: centos7
+        steps:
+        - checkout: self
+          clean: true
+          path: "we/need/to/go/deeper"
+
+        - bash: autoreconf --install
+          displayName: autoreconf
+
+        - bash: |
+            set -eE
+            gcc --version
+            ./configure --perfix=/usr
+            make dist
+          displayName: Build dist tarball
+
+        - task: GithubRelease@0
+          displayName: Create/edit GitHub Draft Release
+          inputs:
+            githubConnection: release
+            repositoryName: yshestakov/scratch
+            action: edit
+            tag: $(Build.SourceBranchName)
+            isDraft: true
+            addChangeLog: false
+            #releaseNotesSource: file
+            #releaseNotesFile: NEWS
+            assetUploadMode: replace
+            assets: |
+              ./amhello-*.tar.gz
+
+  - stage: Release
+    jobs:
+      - template: az-distro-release.yaml
+        parameters:
+          target: publish-release

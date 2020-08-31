@@ -1,0 +1,56 @@
+jobs:
+  - job: distro_release
+    displayName: distro
+
+    pool:
+      name: MLNX
+      demands:
+        - harbor_registry -equals yes
+
+    strategy:
+      matrix:
+        ubuntu18_cuda11.0:
+          build_container: ubuntu18_cuda11.0
+          artifact_name: amhelo-${{ replace(variables['Build.SourceBranch'], 'refs/tags/', '') }}-ubuntu18.04-mofed5.0-cuda11.0.deb
+
+    container: $[ variables['build_container'] ]
+
+    steps:
+      - checkout: self
+        clean: true
+        path: "we/need/to/go/deeper"
+        # ^ Avoid rpmbuild error: Dest dir longer than base dir is not supported
+
+      - bash: |
+          set -eE
+          autoreconf -iv
+          mkdir pkg-build
+          cd pkg-build
+          ../configure --prefix=/usr
+        displayName: Configure
+
+      - bash: |
+          set -eE
+          cd pkg-build
+          dpkg-buildpackage -us -uc
+          find .. -name '*.deb'
+          find .. -name '*.deb' -exec cp {} "../${AZ_ARTIFACT_NAME}" \;
+          dpkg-deb -I "../${AZ_ARTIFACT_NAME}"
+        displayName: Build DEB package
+        condition: and(succeeded(), contains(variables['artifact_name'], 'ubuntu'))
+        env:
+          AZ_ARTIFACT_NAME: $(artifact_name)
+
+      - task: GithubRelease@0
+        displayName: Upload artifacts to draft release
+        inputs:
+          githubConnection: release
+          repositoryName: yshestakov/scratch
+          action: edit
+          tag: $(Build.SourceBranchName)
+          isDraft: true
+          addChangeLog: false
+          assetUploadMode: replace
+          #releaseNotesSource: file
+          #releaseNotesFile: NEWS
+          assets: "./$(artifact_name)"
