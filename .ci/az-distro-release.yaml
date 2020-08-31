@@ -9,6 +9,9 @@ jobs:
 
     strategy:
       matrix:
+        ubuntu16_cuda10_2:
+          build_container: ubuntu16_cuda10_2
+          artifact_name: amhello-${{ replace(variables['Build.SourceBranch'], 'refs/tags/', '') }}-ubuntu16.04-mofed5.0-cuda10.2.deb
         ubuntu18_cuda11.0:
           build_container: ubuntu18_cuda11.0
           artifact_name: amhelo-${{ replace(variables['Build.SourceBranch'], 'refs/tags/', '') }}-ubuntu18.04-mofed5.0-cuda11.0.deb
