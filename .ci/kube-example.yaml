@@ -21,10 +21,10 @@ variables:
 
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema%2Cparameter-schema#pool
 pool:
+  #  vmImage: $(vmImageName)
   name: MLNX
-    #  vmImage: $(vmImageName)
-    demands:
-    - harbor_registry -equals yes
+  demands:
+  - harbor_registry -equals yes
 
 stages:
 - stage: Deploy
