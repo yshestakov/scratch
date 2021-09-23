@@ -1,6 +1,17 @@
 # See https://aka.ms/yaml
 # This pipeline to be run on PR and merge into "main" ?
-trigger: master
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=example%2Cparameter-schema#triggers
+trigger: 
+  batch: true
+  branches:
+    include:
+      - topic/*
+      - master
+    exclude:
+      - features/experimental/*
+  paths:
+    exclude:
+      - README.md
 
 resources:
   # - repo: self
