@@ -13,8 +13,9 @@ trigger:
     exclude:
       - README.md
 
-resources: []
-  # - repo: self
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=example%2Cparameter-schema#resources
+#resources: []
+# - repo: self
 
 variables:
   dockerRegistryServiceConnection: 'swx-rdmz-cstor01-vip' # Docker service connection identifier
