@@ -1,0 +1,106 @@
+# See https://aka.ms/yaml
+# This pipeline to be run on PR and merge into "main" ?
+trigger: main
+
+resources:
+- repo: self
+
+variables:
+  dockerRegistryServiceConnection: 'swx-rdmz-cstor01-vip' # Docker service connection identifier
+  vmImageName: 'ubuntu-latest' # name of your VM
+  envName: 'myEnv' # name of your environment
+  resourceName: 'myResource' # name of the resource you are referencing
+  dockerfilePath: '**/Dockerfile'
+  # tag: '$(Build.BuildId)' # tag added for your build
+  tag: 'latest' # tag added for your build
+  k8sNamespaceForPR: 'scratch' # namespace used in your PR
+  imagePullSecret: '' # image pull secret
+  imageRepository: 'demo/alpine' # name of image repository
+  containerRegistry: 'swx-rdmz-cstor01-vip.rdmz.labs.mlnx:18181' # path to container registry
+  k8sServiceConnection: 'RDMZ'
+
+
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
+
+  jobs:
+  - deployment: Deploy
+    condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')))
+    displayName: Deploy
+    pool:
+      # vmImage: $(vmImageName)
+      name: MLNX
+      demands:
+        - harbor_registry -equals yes
+    # environment: $(envName).$(resourceName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: KubernetesManifest@0
+            displayName: Create imagePullSecret
+            inputs:
+              action: createSecret
+              secretName: $(imagePullSecret)
+              dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+              kubernetesServiceConnection: $(k8sServiceConnection)
+              
+          - task: KubernetesManifest@0
+            displayName: Deploy to Kubernetes cluster
+            inputs:
+              action: deploy
+              kubernetesServiceConnection: $(k8sServiceConnection)
+              manifests: |
+                $(Pipeline.Workspace)/manifests/deployment.yml
+                $(Pipeline.Workspace)/manifests/service.yml
+              imagePullSecrets: |
+                $(imagePullSecret)
+              containers: |
+                $(containerRegistry)/$(imageRepository):$(tag)
+
+  - deployment: DeployPullRequest
+    displayName: Deploy Pull request
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/pull/'))
+    pool:
+      # vmImage: $(vmImageName)
+      name: MLNX
+      demands:
+        - harbor_registry -equals yes
+    # environment: '$(envName).$(k8sNamespaceForPR)'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - reviewApp: $(resourceName)
+
+          - task: Kubernetes@1
+            displayName: 'Create a new namespace for the pull request'
+            inputs:
+              command: apply
+              kubernetesServiceConnection: $(k8sServiceConnection)
+              useConfigurationFile: true
+              inline: '{ "kind": "Namespace", "apiVersion": "v1", "metadata": { "name": "$(k8sNamespaceForPR)" }}'
+
+          - task: KubernetesManifest@0
+            displayName: Create imagePullSecret
+            inputs:
+              action: createSecret
+              kubernetesServiceConnection: $(k8sServiceConnection)
+              secretName: $(imagePullSecret)
+              namespace: $(k8sNamespaceForPR)
+              dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+          
+          - task: KubernetesManifest@0
+            displayName: Deploy to the new namespace in the Kubernetes cluster
+            inputs:
+              action: deploy
+              kubernetesServiceConnection: $(k8sServiceConnection)
+              namespace: $(k8sNamespaceForPR)
+              manifests: |
+                $(Pipeline.Workspace)/manifests/deployment.yml
+                $(Pipeline.Workspace)/manifests/service.yml
+              imagePullSecrets: |
+                $(imagePullSecret)
+              containers: |
+                $(containerRegistry)/$(imageRepository):$(tag)
