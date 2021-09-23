@@ -1,9 +1,9 @@
 # See https://aka.ms/yaml
 # This pipeline to be run on PR and merge into "main" ?
-trigger: main
+trigger: master
 
 resources:
-- repo: self
+  # - repo: self
 
 variables:
   dockerRegistryServiceConnection: 'swx-rdmz-cstor01-vip' # Docker service connection identifier
@@ -19,7 +19,14 @@ variables:
   containerRegistry: 'swx-rdmz-cstor01-vip.rdmz.labs.mlnx:18181' # path to container registry
   k8sServiceConnection: 'RDMZ'
 
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema%2Cparameter-schema#pool
+pool:
+  name: MLNX
+    #  vmImage: $(vmImageName)
+    demands:
+    - harbor_registry -equals yes
 
+stages:
 - stage: Deploy
   displayName: Deploy stage
   dependsOn: Build
@@ -29,10 +36,10 @@ variables:
     condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')))
     displayName: Deploy
     pool:
-      # vmImage: $(vmImageName)
-      name: MLNX
-      demands:
-        - harbor_registry -equals yes
+      vmImage: $(vmImageName)
+#      name: MLNX
+#      demands:
+#        - harbor_registry -equals yes
     # environment: $(envName).$(resourceName)
     strategy:
       runOnce:
@@ -63,10 +70,10 @@ variables:
     displayName: Deploy Pull request
     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/pull/'))
     pool:
-      # vmImage: $(vmImageName)
-      name: MLNX
-      demands:
-        - harbor_registry -equals yes
+       vmImage: $(vmImageName)
+#      name: MLNX
+#      demands:
+#        - harbor_registry -equals yes
     # environment: '$(envName).$(k8sNamespaceForPR)'
     strategy:
       runOnce:
