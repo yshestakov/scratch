@@ -52,7 +52,7 @@ stages:
 #      name: MLNX
 #      demands:
 #        - harbor_registry -equals yes
-    # environment: $(envName).$(resourceName)
+    environment: $(envName).$(resourceName)
     strategy:
       runOnce:
         deploy:
@@ -86,7 +86,7 @@ stages:
 #      name: MLNX
 #      demands:
 #        - harbor_registry -equals yes
-    # environment: '$(envName).$(k8sNamespaceForPR)'
+    environment: '$(envName).$(k8sNamespaceForPR)'
     strategy:
       runOnce:
         deploy:
