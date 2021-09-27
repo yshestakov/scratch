@@ -20,6 +20,10 @@ resources:
     - container: ubuntu
       image: rdmz-harbor.rdmz.labs.mlnx/swx-storage/spdk/x86_64/ubuntu2004ofed54:5.4-1.0.3.0
 
+    - container: ubuntu2004
+      image: rdmz-harbor.rdmz.labs.mlnx/swx-infra/x86_64/ubuntu20.04/builder:mofed-5.0-1.0.0.0
+      options: -v /hpc/local:/hpc/local -v /auto/sw_tools:/auto/sw_tools
+
 variables:
   dockerRegistryServiceConnection: 'swx-rdmz-cstor01-vip' # Docker service connection identifier
   vmImageName: 'ubuntu-latest' # name of your VM
@@ -51,7 +55,7 @@ stages:
         name: MLNX
         demands:
         - ucx_docker -equals yes
-      container: ubuntu
+      container: ubuntu2004
       steps:
         - checkout: self
           clean: true
