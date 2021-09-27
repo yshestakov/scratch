@@ -65,6 +65,8 @@ stages:
               autoreconf -v --install
           displayName: Setup autotools
         - bash: |
+              ./configure --prefix=/usr/local
+              ls -l
               make
           displayName: build the thing
 
