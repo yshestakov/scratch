@@ -50,7 +50,7 @@ stages:
       pool:
         name: MLNX
         demands:
-        - ucx_instinct -equals yes
+        - ucx_docker -equals yes
       container: ubuntu
       steps:
         - checkout: self
