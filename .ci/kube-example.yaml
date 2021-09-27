@@ -14,8 +14,11 @@ trigger:
       - README.md
 
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=example%2Cparameter-schema#resources
-#resources: []
+resources: 
 # - repo: self
+  containers:
+    - container: ubuntu
+      image: rdmz-harbor.rdmz.labs.mlnx/swx-storage/spdk/x86_64/ubuntu2004ofed54:5.4-1.0.3.0
 
 variables:
   dockerRegistryServiceConnection: 'swx-rdmz-cstor01-vip' # Docker service connection identifier
@@ -31,6 +34,7 @@ variables:
   containerRegistry: 'swx-rdmz-cstor01-vip.rdmz.labs.mlnx:18181' # path to container registry
   k8sServiceConnection: 'RDMZ'
 
+
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema%2Cparameter-schema#pool
 pool:
   #  vmImage: $(vmImageName)
@@ -39,9 +43,28 @@ pool:
   - harbor_registry -equals yes
 
 stages:
+- stage: Build
+  jobs:
+    - job: build a code
+      displayName: Build a code in "ubuntu"
+      pool:
+        name: MLNX
+        demands:
+        - ucx_instinct -equals yes
+      container: ubuntu
+      steps:
+        - checkout: self
+          clean: true
+          fetchDepth: 100
+
+        - bash: autoreconf -v --install
+          displayName: Setup autotools
+        - bash: make
+          displayName: build the thing
+
 - stage: Deploy
   displayName: Deploy stage
-  # dependsOn: Build
+  dependsOn: Build
 
   jobs:
   - deployment: Deploy
