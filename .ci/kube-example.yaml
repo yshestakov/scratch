@@ -57,9 +57,11 @@ stages:
           clean: true
           fetchDepth: 100
 
-        - bash: autoreconf -v --install
+        - bash: |
+              autoreconf -v --install
           displayName: Setup autotools
-        - bash: make
+        - bash: |
+              make
           displayName: build the thing
 
 - stage: Deploy
