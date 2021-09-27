@@ -45,7 +45,7 @@ pool:
 stages:
 - stage: Build
   jobs:
-    - job: build a code
+    - job: build-a-code
       displayName: Build a code in "ubuntu"
       pool:
         name: MLNX
