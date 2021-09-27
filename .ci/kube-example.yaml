@@ -79,10 +79,10 @@ stages:
     condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')))
     displayName: Deploy
     pool:
-      vmImage: $(vmImageName)
-#      name: MLNX
-#      demands:
-#        - harbor_registry -equals yes
+#      vmImage: $(vmImageName)
+      name: MLNX
+      demands:
+        - harbor_registry -equals yes
     environment: $(envName).$(resourceName)
     strategy:
       runOnce:
@@ -94,7 +94,7 @@ stages:
               action: createSecret
               secretName: $(imagePullSecret)
               dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
-              # kubernetesServiceConnection: $(k8sServiceConnection)
+              kubernetesServiceConnection: $(k8sServiceConnection)
               # ^^^ value for kubernetesServiceConnection input automatically 
               #     passed down to task by environment.resource input
               
@@ -138,7 +138,7 @@ stages:
             displayName: Create imagePullSecret
             inputs:
               action: createSecret
-              # kubernetesServiceConnection: $(k8sServiceConnection)
+              kubernetesServiceConnection: $(k8sServiceConnection)
               secretName: $(imagePullSecret)
               namespace: $(k8sNamespaceForPR)
               dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
