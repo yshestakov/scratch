@@ -88,7 +88,7 @@ stages:
               pwd
               echo $(Pipeline.Workspace)
               ls -l $(Pipeline.Workspace)/
-          displayName: list Workspace
+            displayName: list Workspace
           - task: KubernetesManifest@0
             displayName: Create imagePullSecret
             inputs:
