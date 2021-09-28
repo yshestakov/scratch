@@ -33,7 +33,7 @@ variables:
   # tag: '$(Build.BuildId)' # tag added for your build
   tag: 'latest' # tag added for your build
   k8sNamespaceForPR: 'scratch-pr' # namespace used in your PR
-  imagePullSecret: '{{#toAlphaNumericString containerRegistryConnection.Name 50}}{{/toAlphaNumericString}}{{#shortGuid}}{{/shortGuid}}-auth' # image pull secret
+  imagePullSecret: 'swx-rdmz-cstor01-vip' # image pull secret
   imageRepository: 'demo/alpine' # name of image repository
   containerRegistry: 'swx-rdmz-cstor01-vip.rdmz.labs.mlnx:18181' # path to container registry
   k8sServiceConnection: 'RDMZ'
