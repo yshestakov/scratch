@@ -33,7 +33,7 @@ variables:
   # tag: '$(Build.BuildId)' # tag added for your build
   tag: 'latest' # tag added for your build
   k8sNamespaceForPR: 'scratch-pr' # namespace used in your PR
-  imagePullSecret: '' # image pull secret
+  imagePullSecret: '{{#toAlphaNumericString containerRegistryConnection.Name 50}}{{/toAlphaNumericString}}{{#shortGuid}}{{/shortGuid}}-auth' # image pull secret
   imageRepository: 'demo/alpine' # name of image repository
   containerRegistry: 'swx-rdmz-cstor01-vip.rdmz.labs.mlnx:18181' # path to container registry
   k8sServiceConnection: 'RDMZ'
@@ -52,10 +52,10 @@ stages:
   jobs:
     - job: build_a_code
       displayName: Build a code in "ubuntu"
-#      pool:
-#        name: MLNX
-#        demands:
-#        - ucx_docker -equals yes
+      pool:
+        name: MLNX
+        demands:
+        - ucx_docker -equals yes
       container: ubuntu2004
       steps:
         - checkout: self
@@ -95,7 +95,7 @@ stages:
               action: createSecret
               secretName: $(imagePullSecret)
               dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
-              kubernetesServiceConnection: $(k8sServiceConnection)
+              # kubernetesServiceConnection: $(k8sServiceConnection)
               # ^^^ value for kubernetesServiceConnection input automatically 
               #     passed down to task by environment.resource input
               
@@ -103,7 +103,7 @@ stages:
             displayName: Deploy to Kubernetes cluster
             inputs:
               action: deploy
-              kubernetesServiceConnection: $(k8sServiceConnection)
+              # kubernetesServiceConnection: $(k8sServiceConnection)
               manifests: |
                 $(Pipeline.Workspace)/manifests/deployment.yml
                 $(Pipeline.Workspace)/manifests/service.yml
@@ -134,7 +134,7 @@ stages:
             displayName: Create imagePullSecret
             inputs:
               action: createSecret
-              kubernetesServiceConnection: $(k8sServiceConnection)
+              # kubernetesServiceConnection: $(k8sServiceConnection)
               secretName: $(imagePullSecret)
               namespace: $(k8sNamespaceForPR)
               dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
