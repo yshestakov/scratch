@@ -52,6 +52,9 @@ stages:
   jobs:
     - job: build_a_code
       displayName: Build a code in "ubuntu"
+      name: MLNX
+      demands:
+      - ucx_docker -equals yes
       container: ubuntu2004
       steps:
         - checkout: self
