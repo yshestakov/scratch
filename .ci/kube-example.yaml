@@ -52,10 +52,10 @@ stages:
   jobs:
     - job: build_a_code
       displayName: Build a code in "ubuntu"
-      pool:
-        name: MLNX
-        demands:
-        - ucx_docker -equals yes
+#      pool:
+#        name: MLNX
+#        demands:
+#        - ucx_docker -equals yes
       container: ubuntu2004
       steps:
         - checkout: self
@@ -83,6 +83,7 @@ stages:
     strategy:
       runOnce:
         deploy:
+          container: ubuntu2004
           steps:
           - bash: |
               pwd
@@ -119,6 +120,7 @@ stages:
     strategy:
       runOnce:
         deploy:
+          container: ubuntu2004
           steps:
 #          - reviewApp: $(resourceName)
 
