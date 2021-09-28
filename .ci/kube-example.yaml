@@ -84,9 +84,9 @@ stages:
       runOnce:
         deploy:
           steps:
-          - checkout: self
-            clean: true
-            fetchDepth: 100
+#          - checkout: self
+#            clean: true
+#            fetchDepth: 100
           - bash: |
               pwd
               echo $(Pipeline.Workspace)
@@ -110,8 +110,8 @@ stages:
               # kubernetesServiceConnection: $(k8sServiceConnection)
               namespace: $(resourceName)
               manifests: |
-                $(Pipeline.Workspace)/manifests/deployment.yml
-                $(Pipeline.Workspace)/manifests/service.yml
+                $(Pipeline.Workspace)/s/manifests/deployment.yml
+                $(Pipeline.Workspace)/s/manifests/service.yml
               imagePullSecrets: |
                 $(imagePullSecret)
               containers: |
@@ -151,8 +151,8 @@ stages:
               # kubernetesServiceConnection: $(k8sServiceConnection)
               namespace: $(k8sNamespaceForPR)
               manifests: |
-                $(Pipeline.Workspace)/manifests/deployment.yml
-                $(Pipeline.Workspace)/manifests/service.yml
+                $(Pipeline.Workspace)/s/manifests/deployment.yml
+                $(Pipeline.Workspace)/s/manifests/service.yml
               imagePullSecrets: |
                 $(imagePullSecret)
               containers: |
