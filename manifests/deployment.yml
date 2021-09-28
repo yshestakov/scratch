@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-nginx-deployment
+  name: mynginx-deployment
 spec:
   # namespace: scratch
   selector:
