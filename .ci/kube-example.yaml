@@ -84,21 +84,26 @@ stages:
       runOnce:
         deploy:
           steps:
-#          - task: KubernetesManifest@0
-#            displayName: Create imagePullSecret
-#            inputs:
-#              action: createSecret
-#              secretName: $(imagePullSecret)
-#              dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
-#              # kubernetesServiceConnection: $(k8sServiceConnection)
-#              # ^^^ value for kubernetesServiceConnection input automatically 
-#              #     passed down to task by environment.resource input
+          - bash: |
+              pwd
+              echo $(Pipeline.Workspace)
+              ls -l $(Pipeline.Workspace)/
+          displayName: list Workspace
+          - task: KubernetesManifest@0
+            displayName: Create imagePullSecret
+            inputs:
+              action: createSecret
+              secretName: $(imagePullSecret)
+              dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+              kubernetesServiceConnection: $(k8sServiceConnection)
+              # ^^^ value for kubernetesServiceConnection input automatically 
+              #     passed down to task by environment.resource input
               
           - task: KubernetesManifest@0
             displayName: Deploy to Kubernetes cluster
             inputs:
               action: deploy
-              # kubernetesServiceConnection: $(k8sServiceConnection)
+              kubernetesServiceConnection: $(k8sServiceConnection)
               manifests: |
                 $(Pipeline.Workspace)/manifests/deployment.yml
                 $(Pipeline.Workspace)/manifests/service.yml
