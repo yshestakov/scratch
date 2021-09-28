@@ -42,19 +42,16 @@ variables:
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema%2Cparameter-schema#pool
 pool:
   #  vmImage: $(vmImageName)
-  name: MLNX
-  demands:
-  - harbor_registry -equals yes
+#  name: MLNX
+#  demands:
+#  - harbor_registry -equals yes
+  name: RDMZ-K8S
 
 stages:
 - stage: Build
   jobs:
     - job: build_a_code
       displayName: Build a code in "ubuntu"
-      pool:
-        name: MLNX
-        demands:
-        - ucx_docker -equals yes
       container: ubuntu2004
       steps:
         - checkout: self
@@ -78,11 +75,6 @@ stages:
   - deployment: Deploy
     condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')))
     displayName: Deploy
-    pool:
-#      vmImage: $(vmImageName)
-      name: MLNX
-      demands:
-        - harbor_registry -equals yes
     environment: $(envName).$(resourceName)
     strategy:
       runOnce:
@@ -94,7 +86,7 @@ stages:
               action: createSecret
               secretName: $(imagePullSecret)
               dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
-              kubernetesServiceConnection: $(k8sServiceConnection)
+              # kubernetesServiceConnection: $(k8sServiceConnection)
               # ^^^ value for kubernetesServiceConnection input automatically 
               #     passed down to task by environment.resource input
               
@@ -102,7 +94,7 @@ stages:
             displayName: Deploy to Kubernetes cluster
             inputs:
               action: deploy
-              kubernetesServiceConnection: $(k8sServiceConnection)
+              # kubernetesServiceConnection: $(k8sServiceConnection)
               manifests: |
                 $(Pipeline.Workspace)/manifests/deployment.yml
                 $(Pipeline.Workspace)/manifests/service.yml
@@ -114,11 +106,6 @@ stages:
   - deployment: DeployPullRequest
     displayName: Deploy Pull request
     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/pull/'))
-    pool:
-       vmImage: $(vmImageName)
-#      name: MLNX
-#      demands:
-#        - harbor_registry -equals yes
     environment: '$(envName).$(k8sNamespaceForPR)'
     strategy:
       runOnce:
@@ -130,7 +117,7 @@ stages:
             displayName: 'Create a new namespace for the pull request'
             inputs:
               command: apply
-              kubernetesServiceConnection: $(k8sServiceConnection)
+              # kubernetesServiceConnection: $(k8sServiceConnection)
               useConfigurationFile: true
               inline: '{ "kind": "Namespace", "apiVersion": "v1", "metadata": { "name": "$(k8sNamespaceForPR)" }}'
 
