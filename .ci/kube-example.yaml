@@ -83,7 +83,6 @@ stages:
     strategy:
       runOnce:
         deploy:
-          container: ubuntu2004
           steps:
           - bash: |
               pwd
@@ -120,7 +119,6 @@ stages:
     strategy:
       runOnce:
         deploy:
-          container: ubuntu2004
           steps:
 #          - reviewApp: $(resourceName)
 
