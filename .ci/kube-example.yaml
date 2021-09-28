@@ -94,6 +94,7 @@ stages:
             inputs:
               action: createSecret
               secretName: $(imagePullSecret)
+              namespace: $(resourceName)
               dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
               # kubernetesServiceConnection: $(k8sServiceConnection)
               # ^^^ value for kubernetesServiceConnection input automatically 
@@ -104,6 +105,7 @@ stages:
             inputs:
               action: deploy
               # kubernetesServiceConnection: $(k8sServiceConnection)
+              namespace: $(resourceName)
               manifests: |
                 $(Pipeline.Workspace)/manifests/deployment.yml
                 $(Pipeline.Workspace)/manifests/service.yml
