@@ -7,15 +7,15 @@ spec:
   # namespace: scratch
   selector:
     matchLabels:
-      app: my-nginx
+      app: mynginx
   replicas: 1 # tells deployment to run 2 pods matching the template
   template:
     metadata:
       labels:
-        app: my-nginx
+        app: mynginx
     spec:
       containers:
-      - name: my-nginx
+      - name: mynginx0
         image: nginx:1.21.3-alpine
         ports:
         - containerPort: 80
