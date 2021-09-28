@@ -84,9 +84,9 @@ stages:
       runOnce:
         deploy:
           steps:
-#          - checkout: self
-#            clean: true
-#            fetchDepth: 100
+          - checkout: self
+            clean: true
+            fetchDepth: 100
           - bash: |
               pwd
               echo $(Pipeline.Workspace)
@@ -126,6 +126,9 @@ stages:
         deploy:
           steps:
 #          - reviewApp: $(resourceName)
+          - checkout: self
+            clean: true
+            fetchDepth: 100
 
           - task: Kubernetes@1
             displayName: 'Create a new namespace for the pull request'
