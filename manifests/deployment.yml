@@ -2,16 +2,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-nginx
+  name: my-nginx-deployment
 spec:
+  # namespace: scratch
   selector:
     matchLabels:
-      run: my-nginx
-  replicas: 2 # tells deployment to run 2 pods matching the template
+      app: my-nginx
+  replicas: 1 # tells deployment to run 2 pods matching the template
   template:
     metadata:
       labels:
-        run: my-nginx
+        app: my-nginx
     spec:
       containers:
       - name: my-nginx
