@@ -18,5 +18,5 @@ spec:
       - name: mynginx0
         image: nginx:1.21.3-alpine
         ports:
-        - containerPort: 80
+        - containerPort: 8080
 
