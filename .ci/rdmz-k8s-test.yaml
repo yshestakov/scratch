@@ -50,22 +50,45 @@ pool:
   - azp_master -equals yes
 
 stages:
+- stage: Prepare
+  # displayName: Deploy 2nd stage agent
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    environment: $(envName).$(resourceName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+            clean: true
+            fetchDepth: 100
+              
+          - task: KubernetesManifest@0
+            displayName: Deploy 2nd stage to K8s
+            inputs:
+              action: deploy
+              # kubernetesServiceConnection: $(k8sServiceConnection)
+              namespace: $(resourceName)
+              manifests: |
+                $(Pipeline.Workspace)/s/manifests/2nd-stage-agent.yam
 - stage: Build
+  dependsOn: Prepare
   jobs:
     - job: build_a_code
-      displayName: Build a code for "ubuntu"
-      container: ubuntu2004
+      displayName: Build a code 
+      # container: ubuntu2004
+      pool:
+        name: RDMZ-K8S
+        demands:
+        - my_second_stage -equals yes
       steps:
         - checkout: self
           clean: true
           fetchDepth: 100
 
         - bash: |
-              autoreconf -v --install
-          displayName: Setup autotools
-        - bash: |
-              ./configure --prefix=/usr/local
-              ls -l
-              make
-          displayName: build the thing
-
+              kubectl -n $(resourceName) get pods
+              kubectl -n $(resourceName) describe pod azp-2nd-stage
+              kubectl -n $(resourceName) exec -ti azp-2nd-stage -c ubuntu -- /bin/bash -c 'ls -l /work/'
+          displayName: check kubectl
