@@ -92,3 +92,12 @@ stages:
               kubectl -n $(resourceName) describe pod azp-2nd-stage
               kubectl -n $(resourceName) exec -ti azp-2nd-stage -c ubuntu -- /bin/bash -c 'ls -l /work/'
           displayName: check kubectl
+
+- stage: Cleanup
+  condition: in(dependencies.Build.result, 'Succeeded', 'Canceled')
+  jobs:
+    - job: do_cleanup
+      steps:
+        - bash: |
+              kubectl -n $(resourceName) delete pod azp-2nd-stage
+          displayName: delete azp-2nd-stage pod
