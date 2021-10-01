@@ -47,9 +47,15 @@ spec:
         name: work-volume
   - name: ubuntu
     image: rdmz-harbor.rdmz.labs.mlnx/swx-storage/spdk/x86_64/ubuntu2004ofed54:5.4-1.0.3.0
+    command:
+    - sleep
+    args:
+    - infinity
+    tty: true
     volumeMounts:
       - mountPath: /work
         name: work-volume
       - mountPath: /azp
         name: azp-agent-2-192-0
+        readonly: true 
 #
