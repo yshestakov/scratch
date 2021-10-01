@@ -57,5 +57,5 @@ spec:
         name: work-volume
       - mountPath: /azp
         name: azp-agent-2-192-0
-        readonly: true 
+        readOnly: true 
 #
