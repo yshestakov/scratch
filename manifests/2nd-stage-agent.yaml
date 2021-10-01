@@ -51,7 +51,6 @@ spec:
     volumeMounts:
       - mountPath: /work
         name: work-volume
-    volumeMounts:
       - mountPath: /azp
         name: azp-agent-2-192-0
 #
