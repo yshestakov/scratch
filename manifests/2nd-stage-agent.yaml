@@ -8,7 +8,6 @@ metadata:
   name: azp-2nd-stage
 spec:
   serviceAccountName: build-robot
-  namespace: scratch
   restartPolicy: Never
   nodeSelector:
     beta.kubernetes.io/os: linux
