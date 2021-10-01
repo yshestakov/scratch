@@ -71,7 +71,7 @@ stages:
               # kubernetesServiceConnection: $(k8sServiceConnection)
               namespace: $(resourceName)
               manifests: |
-                $(Pipeline.Workspace)/s/manifests/2nd-stage-agent.yam
+                $(Pipeline.Workspace)/s/manifests/2nd-stage-agent.yaml
 - stage: Build
   dependsOn: Prepare
   jobs:
