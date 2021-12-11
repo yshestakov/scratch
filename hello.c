@@ -2,6 +2,6 @@
 
 int main(int argc, char** argv)
 {
-    printf("Hello, github-hooker/7: %s\n", argv[0]);
+    printf("Hello, github-hooker/8: %s\n", argv[0]);
     return 0;
 }
