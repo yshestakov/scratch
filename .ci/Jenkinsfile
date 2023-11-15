@@ -1,0 +1,30 @@
+#!/usr/bin/env groovy
+
+pipeline {
+    agent {
+        kubernetes {
+            namespace 'default'
+            yamlFile '.ci/kube-pod.yaml'
+            defaultContainer 'ansible-ee'
+        }
+    }
+    options {
+      ansiColor('xterm')
+      timestamps()
+      // lock resource: env.SETUP_CLUSTER
+      timeout(time: 480, unit: 'MINUTES')
+    }
+    stages {
+        stage('pre') {
+            steps {
+                sh 'uname -a'
+                sh 'env'
+            }
+        }
+        stage('co') {
+            steps {
+                checkout scm
+            }
+        }
+    }
+}

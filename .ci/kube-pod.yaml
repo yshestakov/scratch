@@ -1,0 +1,41 @@
+---
+apiVersion: v1
+kind: Pod
+spec:
+    restartPolicy: Never
+    nodeSelector:
+      kubernetes.io/os: linux
+      kubernetes.io/arch: amd64
+    volumes:
+    - name:  scratch-rsa
+      secret:
+        secretName: scratch-rsa
+        defaultMode: 256
+        items:
+        - key: ssh-privatekey
+          path: id_rsa
+        - key: ssh-publickey
+          path: id_rsa.pub
+    containers:
+    - name: ansible-ee
+      image: quay.io/ansible/awx-ee:22.7.0
+      imagePullPolicy: IfNotPresent
+      command:
+      - sleep
+      args:
+      - infinity
+      tty: true
+      securityContext:
+        runAsUser: 0
+      resources:
+        requests:
+          memory: "512Mi"
+          cpu: "2000m"
+        limits:
+          memory: "512Mi"
+          cpu: "2000m"
+      volumeMounts:
+        - name: scratch-rsa
+          readOnly: true
+          # container will see /root/.ssh/id_rsa as usual:
+          mountPath: "/root/.ssh"
